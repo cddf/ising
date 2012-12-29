@@ -3,11 +3,12 @@
 #define _METROPOLIS2D_H
 
 #include "MetropolisStrategy.h"
+#include "SpinArray.h"
 
 class Metropolis2D : public virtual MetropolisStrategy
 {
   private:
-  int* _spins;
+  SpinArray* _spins;
   int _sizeX;
   int _sizeY;
   double _j;
@@ -22,7 +23,7 @@ class Metropolis2D : public virtual MetropolisStrategy
   // destrcutor
   ~Metropolis2D()
   {
-    delete [] _spins;
+   	delete _spins;
 	delete [] _Ws;
 	delete [] _NWs;
   }

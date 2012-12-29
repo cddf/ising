@@ -16,7 +16,7 @@ Metropolis2D::Metropolis2D(int sizeX,int sizeY, double j, double b)
     _sizeX = sizeX;
 	_sizeY = sizeY;
 	int size = sizeX*sizeY;
-    _spins = new int[size];
+	_spins = new SpinArray(size);
     _j = j;
     _b = b;
     _Ws = new double[size];
@@ -37,8 +37,8 @@ Metropolis2D::Metropolis2D(int sizeX,int sizeY, double j, double b)
       {
         n = 1;
       }
-      _spins[i] = n;
-      cout << " " << _spins[i];
+      _spins->SetSpin(i, n);
+      cout << " " << _spins->GetSpin(i);;
 	  if(i % _sizeX == _sizeX - 1)
 		  cout << "\n";
     }
@@ -53,7 +53,7 @@ double Metropolis2D::calculate_dE(int i) const
   // dH = sum_j J_ij * (S'_i * S_j - S_i * S_j) - (S'_i - S_i) * B
   // dS_i = S'_i - S_i = +- 2
   // dH = sum_j J_ij * (dS_i * S_j) - (dS_i) * B
-  int spin_old = _spins[i];
+  int spin_old = _spins->GetSpin(i);
   int spin_new = -spin_old;
 
   int dS_i = spin_new - spin_old;
@@ -72,8 +72,8 @@ double Metropolis2D::calculate_dE(int i) const
   nd = x + _sizeX * ((y - 1 + _sizeY) % _sizeY);
 
   
-  double nn = _spins[nl] + _spins[nr] 
-		+ _spins[nu] + _spins[nd];
+  double nn = _spins->GetSpin(nl) + _spins->GetSpin(nr) 
+		+ _spins->GetSpin(nu) + _spins->GetSpin(nd);
   double dJ = _j * dS_i * nn;
   double dB = _b * dS_i; 
 
@@ -83,20 +83,13 @@ double Metropolis2D::calculate_dE(int i) const
 
 void Metropolis2D::flipSpin(int i)
 {
-  _spins[i] *= -1;
-  // FIXME remove
-  //cout << "Spins: ";
-  //for (int i = 0; i < _sizeX*_sizeY; i++)
-  //{
-  //  cout << _spins[i] << " ";
-  //}
-  //cout << "\n";
+  _spins->Flip(i);
 }
 
 void Metropolis2D::addProbability(int i)
 {
   _NWs[i]++;
-  _Ws[i] = _Ws[i] + _spins[i] / _NWs[i];
+  _Ws[i] = _Ws[i] + _spins->GetSpin(i) / _NWs[i];
 
 }
 
