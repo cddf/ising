@@ -8,7 +8,8 @@ class Metropolis2D : public virtual MetropolisStrategy
 {
   private:
   int* _spins;
-  int _size;
+  int _sizeX;
+  int _sizeY;
   double _j;
   double _b;
   double* _Ws; // Einzelne Wahrscheinlichkeiten
@@ -16,9 +17,7 @@ class Metropolis2D : public virtual MetropolisStrategy
 
   public:
 
-
-
-  Metropolis2D(int size, double j, double b);
+  Metropolis2D(int sizeX, int sizeY, double j, double b);
 
   // destrcutor
   ~Metropolis2D()
@@ -35,8 +34,10 @@ class Metropolis2D : public virtual MetropolisStrategy
 
   int spinNumber() const
   {
-    return _size;
+	  return _sizeX*_sizeY;
   }
+
+  
 
 };
 
