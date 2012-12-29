@@ -80,19 +80,18 @@ void MetropolisSample::flipSpin(int i)
 {
   _spins[i] *= -1;
   // FIXME remove
-  cout << "Spins: ";
+  //cout << " Flip: "<< i << ", Spins: ";
   for (int i = 0; i < _size; i++)
   {
-    cout << _spins[i] << " ";
+    //cout << _spins[i] << " ";
   }
-  cout << "\n";
+  //cout << "\n";
 }
 
 void MetropolisSample::addProbability(int i)
 {
-  _NWs[i]++;
-  _Ws[i] = _Ws[i] + _spins[i] / _NWs[i];
-
+  ++_NWs[i];
+  _Ws[i] = (1.0 * _Ws[i] * _NWs[i] +  1.0 *_spins[i]) / (1.0 * _NWs[i] + 1.0);
 }
 
 double MetropolisSample::measure() const
@@ -102,13 +101,13 @@ double MetropolisSample::measure() const
   
   double M = 0;
 
-  cout << "Wahrscheinlichkeiten der Spins:  ";
+  //cout << "Wahrscheinlichkeiten der Spins:  ";
   for (int i = 0; i < _size; i++)
   {
     M += _Ws[i];
-    cout << _Ws[i] << " ";
+    //cout << _Ws[i] << " ";
   }
-  cout << "\n";
+  //cout << "\n";
 
   return M;
 }

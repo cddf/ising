@@ -14,21 +14,33 @@ using namespace std;
 
 
 // ----------  template function --------
-void isingLoop(MetropolisStrategy* ms)
+double isingLoop(MetropolisStrategy* ms)
 {
 
   //srand(1); // init seed, 1 for determinism             
-  int running = 1000;
-  int measure = 100; // Messung alle x flips
-  const double beta = 1.23456; // beta vllt in MetropolisStrategie zutun
+  int running = 10000000;
+  int measure = 1000000; // Messung alle x flips
+  const double beta = 1.23456e0; // beta vllt in MetropolisStrategie zutun
+  int i = 0;
+  bool random = true;
+  double M;
 
   while (running > 0)
   {
+    if (random)
+    {
     // 1. Pick random element
-    int i = rand() % ms->spinNumber();
+    i = rand() % ms->spinNumber();
+    }
+    else
+    {
+    // Ein Element nach dem anderen
+    i++;
+    if (i >= ms->spinNumber())
+      i = 0;
+    }
 
-
-    // 2. clac the Energy
+    // 2. calc the Energy
 
     // dE = E_new - E_old;
     double dE = ms->calculate_dE(i);
@@ -51,12 +63,13 @@ void isingLoop(MetropolisStrategy* ms)
     // die Messungen aufzeichenen und am ende ergebnis zurückliefern, daher ist void wohl nicht die beste wahl....
     ms->addProbability(i);
 
-    if (running % 10 == 0)
+    if (running % measure == 0)
     {
-      double M = ms->measure();
+      M = ms->measure();
       
-      cout << "Magnetisierung: " << M << "\n";
+      cout << "  Magnetisierung: " << M << "\n";
     }
   }
+  return M;
 }
 
