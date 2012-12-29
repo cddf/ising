@@ -27,16 +27,22 @@ class MetropolisStrategy
    * Calculates the Energiedifference between flipped (Spin i) and actual state
    */     
   virtual double calculate_dE(int i) const = 0;
+
   /**
    * Flips the Spin i
    */     
   virtual void flipSpin(int i) = 0;
-  
+
+  /**
+   * Aktualisiere Wahrscheinlichkeiten von Spin i mit Wert spin
+   */     
+  virtual void addProbability(int i) = 0;
+
   /**
    * Measures the state  
    */  
   virtual double measure() const = 0;
-  
+
   /**
    * Retruns the number of spins
    */     
@@ -94,6 +100,7 @@ class MetropolisSample : public virtual MetropolisStrategy
 
   double calculate_dE(int i) const;
   void flipSpin(int i);
+  void addProbability(int i);
   double measure() const;
 
   int spinNumber() const
@@ -112,14 +119,27 @@ double MetropolisSample::calculate_dE(int i) const
   // dH = sum_j J_ij * (S'_i * S_j - S_i * S_j) - (S'_i - S_i) * B
   // dS_i = S'_i - S_i = +- 2
   // dH = sum_j J_ij * (dS_i * S_j) - (dS_i) * B
-  char spin_old = _spins[i];
-  char spin_new = -spin_old;
+  int spin_old = _spins[i];
+  int spin_new = -spin_old;
 
-  char dS_i = spin_new - spin_old;
+  int dS_i = spin_new - spin_old;
 
   // n.n. approx:
   // TODO: find n.n.
-  double nn = 1;
+  int nl, nr;
+  nl = i - 1;
+  nr = i + 1;
+  // zyklische Randbedingungen
+  if (nl < 0)
+  {
+    nl = _size - 1;
+  }
+  if (nr >= _size)
+  {
+    nr = 0;
+  }
+
+  double nn = _spins[nl] + _spins[nr];
   double dJ = _j * dS_i * nn;
   double dB = _b * dS_i; 
 
@@ -129,10 +149,7 @@ double MetropolisSample::calculate_dE(int i) const
 
 void MetropolisSample::flipSpin(int i)
 {
-  _NWs[i]++;
-  _Ws[i] = _Ws[i] - _spins[i] / _NWs[i];
   _spins[i] *= -1;
-
   // FIXME remove
   cout << "Spins: ";
   for (int i = 0; i < _size; i++)
@@ -140,6 +157,13 @@ void MetropolisSample::flipSpin(int i)
     cout << _spins[i] << " ";
   }
   cout << "\n";
+}
+
+void MetropolisSample::addProbability(int i)
+{
+  _NWs[i]++;
+  _Ws[i] = _Ws[i] + _spins[i] / _NWs[i];
+
 }
 
 double MetropolisSample::measure() const
@@ -173,23 +197,23 @@ void isingLoop(MetropolisStrategy* ms)
 {
 
   //srand(1); // init seed, 1 for determinism             
-  int running = 10;
+  int running = 1000;
+  int measure = 100; // Messung alle x flips
   const double beta = 1.23456; // beta vllt in MetropolisStrategie zutun
-  
+
   while (running > 0)
   {
     // 1. Pick random element
     int i = rand() % ms->spinNumber();
-    
-  
+
+
     // 2. clac the Energy
-    
+
     // dE = E_new - E_old;
     double dE = ms->calculate_dE(i);
-    
+
     double W = dE > 0.0 ? exp(-beta*dE) : 1.0;
 
-    cout << "W = " << W << "\n";
     if(W >= 1.0  || drand() < W)
     {
       // accept
@@ -199,21 +223,26 @@ void isingLoop(MetropolisStrategy* ms)
     {
       // reject, do nothing
     }
-          
+
     running--;
     // 3. Do Measure
     // ...
     // die Messungen aufzeichenen und am ende ergebnis zurückliefern, daher ist void wohl nicht die beste wahl....
-    double M = ms->measure();
-    
-    cout << "Magnetisierung: " << M << "\n";
+    ms->addProbability(i);
+
+    if (running % 10 == 0)
+    {
+      double M = ms->measure();
+      
+      cout << "Magnetisierung: " << M << "\n";
+    }
   }
 }
 
 
 int main (int argc, char** argv)
 {
-  MetropolisSample* ms = new MetropolisSample(10, 1, -1);
+  MetropolisSample* ms = new MetropolisSample(20, 1, 2);
   isingLoop(ms);
   // TODO: print result 
   delete ms;
