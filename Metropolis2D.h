@@ -1,10 +1,10 @@
 #pragma once
-#ifndef _METROPOLISSAMPLE_H
-#define _METROPOLISSAMPLE_H
+#ifndef _METROPOLIS2D_H
+#define _METROPOLIS2D_H
 
 #include "MetropolisStrategy.h"
 
-class MetropolisSample : public virtual MetropolisStrategy
+class Metropolis2D : public virtual MetropolisStrategy
 {
   private:
   int* _spins;
@@ -18,10 +18,10 @@ class MetropolisSample : public virtual MetropolisStrategy
 
 
 
-  MetropolisSample(int size, double j, double b);
+  Metropolis2D(int size, double j, double b);
 
   // destrcutor
-  ~MetropolisSample()
+  ~Metropolis2D()
   {
     delete [] _spins;
 	delete [] _Ws;
@@ -38,7 +38,6 @@ class MetropolisSample : public virtual MetropolisStrategy
     return _size;
   }
 
-}; 
-
+};
 
 #endif
