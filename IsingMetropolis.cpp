@@ -18,9 +18,9 @@ double isingLoop(MetropolisStrategy* ms)
 {
 
   //srand(1); // init seed, 1 for determinism             
-  int running = 10000000;
-  int measure = 1000000; // Messung alle x flips
-  const double beta = 1.23456e0; // beta vllt in MetropolisStrategie zutun
+  int running = 1e4;
+  int measure = 1e3; // Messung alle x flips
+  const double beta = 1.23456e-2; // beta vllt in MetropolisStrategie zutun
   int i = 0;
   bool random = true;
   double M;

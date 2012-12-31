@@ -54,7 +54,6 @@ double MetropolisSample::calculate_dE(int i) const
   int dS_i = spin_new - spin_old;
 
   // n.n. approx:
-  // TODO: find n.n.
   int nl, nr;
   nl = i - 1;
   nr = i + 1;

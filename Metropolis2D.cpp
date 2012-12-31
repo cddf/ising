@@ -25,7 +25,7 @@ Metropolis2D::Metropolis2D(int sizeX,int sizeY, double j, double b)
 
     // do random initialization with +1 or -1
     // or maybe add method to Strategie for init with seed parameter
-    cout << "Initialisierung: ";
+//    cout << "Initialisierung:\n";
     for(int i = 0; i < size; i++)
     {
       int n;
@@ -38,11 +38,11 @@ Metropolis2D::Metropolis2D(int sizeX,int sizeY, double j, double b)
         n = 1;
       }
       _spins->SetSpin(i, n);
-      cout << " " << _spins->GetSpin(i);;
-	  if(i % _sizeX == _sizeX - 1)
-		  cout << "\n";
+//      cout << " " << _spins->GetSpin(i);;
+//	  if(i % _sizeX == _sizeX - 1)
+//		  cout << "\n";
     }
-    cout << "\n";
+//    cout << "\n";
 }
 
 double Metropolis2D::calculate_dE(int i) const
@@ -62,7 +62,6 @@ double Metropolis2D::calculate_dE(int i) const
   int x = i % _sizeX;
   int y = i / _sizeX;
   // n.n. approx:
-  // TODO: find n.n.
   int nl, nr, nu, nd;
   // zyklische Randbedingungen
   nl = y * _sizeX +  (x + 1)          % _sizeX;
@@ -88,8 +87,8 @@ void Metropolis2D::flipSpin(int i)
 
 void Metropolis2D::addProbability(int i)
 {
-  _NWs[i]++;
-  _Ws[i] = _Ws[i] + _spins->GetSpin(i) / _NWs[i];
+  ++_NWs[i];
+  _Ws[i] = (1.0 * _Ws[i] * _NWs[i] +  1.0 *_spins->GetSpin(i)) / (1.0 * _NWs[i] + 1.0);
 
 }
 
@@ -100,15 +99,15 @@ double Metropolis2D::measure() const
   
   double M = 0;
 
-  cout << "Wahrscheinlichkeiten der Spins:  ";
+//  cout << "Wahrscheinlichkeiten der Spins:\n";
   for (int i = 0; i < _sizeX*_sizeY; i++)
   {
     M += _Ws[i];
-    cout << _Ws[i] << " ";
-	if(i % _sizeX == _sizeX - 1)
-		  cout << "\n";
+//    cout << _Ws[i] << " ";
+//	if(i % _sizeX == _sizeX - 1)
+//		  cout << "\n";
   }
-  cout << "\n";
+//  cout << "\n";
 
   return M;
 }
