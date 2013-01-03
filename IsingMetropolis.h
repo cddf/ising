@@ -4,7 +4,7 @@
 
 #include "MetropolisStrategy.h"
 
-double isingLoop(MetropolisStrategy* ms);
+double isingLoop(MetropolisStrategy* ms, int running, const double beta);
 
 
 #endif

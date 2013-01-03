@@ -57,7 +57,7 @@
 ##==========================================================================
 
 # The pre-processor and compiler options.
-MY_CFLAGS =
+MY_CFLAGS = -fopenmp
 
 # The linker options.
 MY_LIBS   =
