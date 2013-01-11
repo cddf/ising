@@ -22,7 +22,6 @@ using namespace std;
 
 int main (int argc, char** argv)
 {
-  SpinArray* a = new SpinArray(2);
   srand(1);
   int xspins, yspins, running;
   double J, B;
@@ -73,7 +72,7 @@ int main (int argc, char** argv)
   //MetropolisSample* ms = new MetropolisSample(20, 1, 2);
   MetropolisStrategy* ms = new Metropolis2D(xspins,yspins, J, B);
   double M = isingLoop(ms, running, beta);
-  cout << "\nMagnetisierung M = " << M << "\n";
+  cout << "\nMagnetisierung M = " << M / xspins / yspins << "\n";
   delete ms;
   return 0;
 }

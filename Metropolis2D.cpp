@@ -67,13 +67,13 @@ double Metropolis2D::calculate_dE(int i) const
   nx = ny = 0;
 
   // zyklische Randbedingungen
-  if(_sizeY == 1)
+  if(_sizeX != 1)
   {
     nl = y * _sizeX +  (x + 1)          % _sizeX;
     nr = y * _sizeX +  (x - 1 + _sizeX) % _sizeX; 
     nx = _spins->GetSpin(nl) + _spins->GetSpin(nr);
   }
-  if(_sizeX == 1)
+  if(_sizeY != 1)
   {
     nu = x + _sizeX * ((y + 1)          % _sizeY);
     nd = x + _sizeX * ((y - 1 + _sizeY) % _sizeY);
