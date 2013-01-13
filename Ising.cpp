@@ -9,6 +9,8 @@
 #include "MetropolisStrategy.h"
 #include "MetropolisSample.h"
 #include "Metropolis2D.h"
+#include "MetropolisND.h"
+
 #include "IsingMetropolis.h"
 
 
@@ -68,7 +70,7 @@ int main (int argc, char** argv)
     <<"beta = " << beta <<"\n"
     <<"running = " << running <<"\n\n";
 
-
+  
   struct timeval start_time_init;
   struct timeval start_time_loop;
   struct timeval comp_time;
@@ -76,12 +78,12 @@ int main (int argc, char** argv)
   gettimeofday(&start_time_init, NULL);
   srand(start_time_init.tv_usec);
 
-  MetropolisStrategy* ms = new Metropolis2D(xspins,yspins, J, B);
+  //MetropolisStrategy* ms = new Metropolis2D(xspins,yspins, J, B);
+  MetropolisStrategy* ms = new MetropolisND(J, B, 2, xspins,yspins );
 
   gettimeofday(&start_time_loop, NULL);
-  
   double M = isingLoop(ms, running, beta);
-  
+
   gettimeofday(&comp_time, NULL);
   double time_init = (start_time_loop.tv_sec - start_time_init.tv_sec) + (start_time_loop.tv_usec - start_time_init.tv_usec) * 1e-6;
   double time_loop = (comp_time.tv_sec - start_time_loop.tv_sec) + (comp_time.tv_usec - start_time_loop.tv_usec) * 1e-6;

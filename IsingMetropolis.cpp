@@ -41,14 +41,12 @@ double isingLoop(MetropolisStrategy* ms, int running, const double beta)
     if (i >= ms->spinNumber())
       i = 0;
     }
-
     // 2. calc the Energy
 
     // dE = E_new - E_old;
     double dE = ms->calculate_dE(i);
-
+    
     double W = dE > 0.0 ? exp(-beta*dE) : 1.0;
-
     if(W >= 1.0  || drand() < W)
     {
       // accept
@@ -58,7 +56,6 @@ double isingLoop(MetropolisStrategy* ms, int running, const double beta)
     {
       // reject, do nothing
     }
-
     //running--;
     // 3. Do Measure
     // ...
@@ -71,6 +68,7 @@ double isingLoop(MetropolisStrategy* ms, int running, const double beta)
       
       cout << "  Magnetisierung: " << M << "\n";
     }
+
   }
   return M;
 }
