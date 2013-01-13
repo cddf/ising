@@ -24,9 +24,9 @@ double isingLoop(MetropolisStrategy* ms, int running, const double beta)
   int i = 0;
   bool random = true;
   double M;
-  omp_set_num_threads(0);
+  //omp_set_num_threads(0);
 
-  #pragma omp parallel for
+  //#pragma omp parallel for
   for (int n = 0; n <= running; n++)
   {
     if (random)

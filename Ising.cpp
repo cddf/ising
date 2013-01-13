@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <string.h>
-
+#include <sys/time.h>
 
 #include "MetropolisStrategy.h"
 #include "MetropolisSample.h"
@@ -22,7 +22,6 @@ using namespace std;
 
 int main (int argc, char** argv)
 {
-  srand(1);
   int xspins, yspins, running;
   double J, B;
   double beta = 1.23456e-3;
@@ -69,10 +68,32 @@ int main (int argc, char** argv)
     <<"beta = " << beta <<"\n"
     <<"running = " << running <<"\n\n";
 
-  //MetropolisSample* ms = new MetropolisSample(20, 1, 2);
+
+  struct timeval start_time_init;
+  struct timeval start_time_loop;
+  struct timeval comp_time;
+
+  gettimeofday(&start_time_init, NULL);
+  srand(start_time_init.tv_usec);
+
   MetropolisStrategy* ms = new Metropolis2D(xspins,yspins, J, B);
+
+  gettimeofday(&start_time_loop, NULL);
+  
   double M = isingLoop(ms, running, beta);
+  
+  gettimeofday(&comp_time, NULL);
+  double time_init = (start_time_loop.tv_sec - start_time_init.tv_sec) + (start_time_loop.tv_usec - start_time_init.tv_usec) * 1e-6;
+  double time_loop = (comp_time.tv_sec - start_time_loop.tv_sec) + (comp_time.tv_usec - start_time_loop.tv_usec) * 1e-6;
+  
+  
   cout << "\nMagnetisierung M = " << M / xspins / yspins << "\n";
+  cout << "Berechnungszeit:\n  Init = " 
+	  << time_init << " sec\n  Loop = " 
+	  << time_loop << " sec\n  Ges  = "
+	  << time_loop +  time_init << " sec\n";
+
+
   delete ms;
   return 0;
 }
