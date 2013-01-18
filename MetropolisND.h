@@ -39,6 +39,9 @@ class MetropolisND : public MetropolisStrategy
 	delete [] _Ws;
 	delete [] _NWs;
   }
+  
+  void reset();
+  MetropolisStrategy& clone() const;
 
   double calculate_dE(int i) const;
   void flipSpin(int i);

@@ -95,6 +95,7 @@ MetropolisND::MetropolisND(double j, double b, int dim, int size[])
       }
       _spins->SetSpin(i, n);
 
+
     }
 	//for(int i=0; i < _spinnumber; i++)
 	//{
@@ -103,6 +104,35 @@ MetropolisND::MetropolisND(double j, double b, int dim, int size[])
 	//	  cout << "\n";
 	//}
 	//cout << "\n";
+}
+
+MetropolisStrategy& MetropolisND::clone() const
+{
+  MetropolisND* ms = new MetropolisND(_j, _b, _dim, _size);
+
+  return *ms;
+}
+
+void MetropolisND::reset()
+{
+   // do random initialization with +1 or -1
+	for(int i = 0; i < _spinnumber; i++)
+	{
+	  int n;
+	  if (drand() <= 0.5)
+	  {
+		n = -1;
+	  }
+	  else
+	  {
+		n = 1;
+	  }
+	  _spins->SetSpin(i, n);
+
+	  _Ws[i] = 0;
+	  _NWs[i] = 0;
+
+	}
 }
 
 void MetropolisND::getCoord(int i, int coord[]) const

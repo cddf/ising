@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string.h>
 #include <sys/time.h>
+#include <omp.h>
+
 
 #include "MetropolisStrategy.h"
 #include "MetropolisSample.h"
@@ -18,6 +20,51 @@
 using namespace std;
 
 
+
+void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double betaMax, int steps)
+{
+  const double betaStep = (betaMax - betaMin) / steps;
+  
+
+  //cout << "Threads max = " << omp_get_max_threads() << "\n";
+  
+  cout << "#Beta Magnetisierung\n";
+  
+  if(steps < omp_get_max_threads())
+    omp_set_num_threads(steps);
+
+  //cout << "Threads max = " << omp_get_max_threads() << "\n";
+  
+  MetropolisStrategy& ms = ms1;
+  #pragma omp parallel 
+  {
+
+    bool notmaster = true;
+    
+    #pragma omp master
+    {
+      //cout << "Threads num = " << omp_get_num_threads() << "\n";
+  
+      notmaster = false;
+    }
+    if(notmaster)
+      ms = ms1.clone();
+    
+    #pragma omp for schedule(static) ordered
+    for(int i= 0; i < steps; i++)
+    {
+      double beta = betaMin + betaStep * i;
+      
+      ms.reset();
+      double M = isingLoop(&ms, running, beta);
+
+      #pragma omp ordered 
+        cout << beta << " " << M / ms.spinNumber() << "\n";
+
+    }
+
+  }
+}
 
 
 
@@ -82,7 +129,8 @@ int main (int argc, char** argv)
   MetropolisStrategy* ms = new MetropolisND(J, B, 2, xspins,yspins );
 
   gettimeofday(&start_time_loop, NULL);
-  double M = isingLoop(ms, running, beta);
+  double M = 0; //isingLoop(ms, running, beta);
+  betaSlice(*ms, running, beta, 20*beta, 50);
 
   gettimeofday(&comp_time, NULL);
   double time_init = (start_time_loop.tv_sec - start_time_init.tv_sec) + (start_time_loop.tv_usec - start_time_init.tv_usec) * 1e-6;

@@ -62,14 +62,15 @@ double isingLoop(MetropolisStrategy* ms, int running, const double beta)
     // die Messungen aufzeichenen und am ende ergebnis zurückliefern, daher ist void wohl nicht die beste wahl....
     ms->addProbability(i);
 
-    if (n % measure == 0)
-    {
-      M = ms->measure();
-      
-      cout << "  Magnetisierung: " << M << "\n";
-    }
+//    if (n % measure == 0)
+//    {
+//      M = ms->measure();
+//      
+//      //cout << "  Magnetisierung: " << M << "\n";
+//    }
 
   }
+  M = ms->measure();
   return M;
 }
 

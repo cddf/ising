@@ -30,6 +30,17 @@ class MetropolisStrategy
    * Retruns the number of spins
    */     
   virtual int spinNumber() const = 0;
+
+  /**
+   * Setzt die Messung zurück und verteilt die Spins wieder zufaellig
+   */
+  virtual void reset() = 0;
+
+  /**
+   * Kopiert alle Einstellungen und gibt eine neue Strategie zurueck
+   * Dabei sind alle Messwert 0 und die Spinverteilung ist zufaellig
+   */
+  virtual MetropolisStrategy& clone() const = 0;
 }; 
 
 
