@@ -9,10 +9,7 @@
 
 #include "common.h"
 
-
-
 using namespace std;
-
 
 // ----------  template function --------
 double isingLoop(MetropolisStrategy* ms, int running, const double beta)

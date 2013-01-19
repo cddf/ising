@@ -236,7 +236,7 @@ endif
 endif
 
 clean:
-	$(RM) $(OBJS) $(PROGRAM) $(PROGRAM).exe
+	$(RM) $(OBJS) $(PROGRAM) $(PROGRAM).exe *.d
 
 distclean: clean
 	$(RM) $(DEPS) TAGS

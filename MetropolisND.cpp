@@ -180,7 +180,7 @@ double MetropolisND::calculate_dE(int i) const
   for(int j = 0; j < _dim; j++)
   {
     int x = coord[j];
-	int size = _size[j];
+    int size = _size[j];
     
 	// n.n. approx:
     if(size != 1)

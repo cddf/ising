@@ -6,7 +6,7 @@
 #include <string.h>
 #include <sys/time.h>
 #include <omp.h>
-
+#include <fstream>
 
 #include "MetropolisStrategy.h"
 #include "MetropolisSample.h"
@@ -15,16 +15,23 @@
 
 #include "IsingMetropolis.h"
 
+#define kB  1.3806488e-23
 
 #include "SpinArray.h"
+
+int _xspins,
+    _yspins,
+    _running;
+double _J,
+       _B,
+       _beta;
+
 using namespace std;
-
-
 
 void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double betaMax, int steps)
 {
   const double betaStep = (betaMax - betaMin) / steps;
-  
+  cout << betaStep << endl;
 
   //cout << "Threads max = " << omp_get_max_threads() << "\n";
   
@@ -66,43 +73,117 @@ void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double beta
   }
 }
 
+/*
+ * Lese Einstellungs-Datei
+ */
+void readConfig(int argc, char** argv, double& betaMax, int& steps)
+{
+  fstream f;
+  string line;
+  f.open(argv[1], ios::in);
+  while (!f.eof())
+  {
+    getline(f, line);
+    unsigned eq = line.find("=");
+    string variable = line.substr(0,eq);
+    string wert = line.substr(eq+1);
 
+    if(strcmp(variable.c_str(),"xspins") == 0)
+    {
+      _xspins = atoi(wert.c_str());
+    }
+    else if(strcmp(variable.c_str(),"yspins") == 0)
+    {
+      _yspins = atoi(wert.c_str());
+    }
+    else if(strcmp(variable.c_str(),"running") == 0)
+    {
+      _running = atoi(wert.c_str());
+    }
+    else if(strcmp(variable.c_str(),"T") == 0)
+    {
+      _beta = 1.0/(kB * strtod(wert.c_str(), NULL));
+    }
+    else if(strcmp(variable.c_str(),"beta") == 0)
+    {
+      _beta = strtod(wert.c_str(), NULL);
+    }
+    else if(strcmp(variable.c_str(),"J") == 0)
+    {
+      _J = strtod(wert.c_str(), NULL);
+    }
+    else if(strcmp(variable.c_str(),"B") == 0)
+    {
+      _B = strtod(wert.c_str(), NULL);
+    }
+    else if(strcmp(variable.c_str(),"betaMax") == 0)
+    {
+      betaMax = strtod(wert.c_str(), NULL);
+    }
+    else if(strcmp(variable.c_str(),"TMin") == 0)
+    {
+      betaMax = 1.0/(kB * strtod(wert.c_str(), NULL));
+    }
+    else if(strcmp(variable.c_str(),"steps") == 0)
+    {
+      steps = atoi(wert.c_str());
+    }
+  }
+  f.close();
+}
 
 
 int main (int argc, char** argv)
 {
-  int xspins, yspins, running;
-  double J, B;
-  double beta = 1.23456e-3;
-  running = 1e3;
-  yspins = 1;
+  _beta = 1.23456e-3;
+  _running = 1e3;
+  _yspins = 1;
+  double betaMax = _beta * 20;
+  int steps = 50;
   //parse command-line
   int j = 2;
-  if (strcmp(argv[1],"--help") == 0)
+  if (argc == 1 || strcmp(argv[1],"--help") == 0)
   {
     cout << "Parameter:\n"
-      << "1d <# Spins> <J> <B> <beta> [<# Durchläufe] \n"
-      << "2d <# Spins X> <# Spins Y> <J> <B> <beta>  [<# Durchläufe] \n";
+      << "1d <# Spins> <J> <B> <Temp [K]> [<# Durchläufe] \n"
+      << "2d <# Spins X> <# Spins Y> <J> <B> <Temp [K]>  [<# Durchläufe] \n\n"
+      << "./ising <config-Datei>\n"
+      << "mit folgenden Variablen:\n"
+      << "xspins=<int>\n"
+      << "yspins=<int>\n"
+      << "running=<int>\n"
+      << "beta=<double>\n"
+      << "T=<double> # Die Temperatur lässt sich auch in Kelvin angeben.\n"
+      << "J=<double>\n"
+      << "B=<double>\n"
+      << "TMin=<double>\n"
+      << "betaMax=<double>\n"
+      << "steps=<int>\n"
+      ;
     return 1;
+  }
+  else if (argc == 2) // lese config Datei
+  {
+    readConfig(argc, argv, betaMax, steps);
   }
   else if (strcmp(argv[1], "1d") == 0)
   {
-    xspins = atoi(argv[j++]);
-    J = strtod(argv[j++], NULL);
-    B = strtod(argv[j++], NULL);
-    beta = strtod(argv[j++], NULL);
+    _xspins = atoi(argv[j++]);
+    _J = strtod(argv[j++], NULL);
+    _B = strtod(argv[j++], NULL);
+    _beta = strtod(argv[j++], NULL);
     if (argc == j + 1)
-      running = atoi( argv[j++]);
+      _running = atoi( argv[j++]);
   }
   else if (strcmp(argv[1], "2d") == 0)
   {
-    xspins = atoi(argv[j++]);
-    yspins = atoi(argv[j++]);
-    J = strtod(argv[j++], NULL);
-    B = strtod(argv[j++], NULL);
-    beta = strtod(argv[j++], NULL);
+    _xspins = atoi(argv[j++]);
+    _yspins = atoi(argv[j++]);
+    _J = strtod(argv[j++], NULL);
+    _B = strtod(argv[j++], NULL);
+    _beta = 1.0/(kB * strtod(argv[j++], NULL));
     if (argc == j + 1)
-      running = atoi( argv[j++]);
+      _running = atoi( argv[j++]);
   }
   else
   {
@@ -110,12 +191,14 @@ int main (int argc, char** argv)
       << argv[0] << argv[1] << argv[2];
     return 1;
   }
-  cout << "xspins = " << xspins << "\n"
-    <<"yspins = " << yspins <<"\n"
-    <<"J = " << J <<"\n"
-    <<"B = " << B <<"\n"
-    <<"beta = " << beta <<"\n"
-    <<"running = " << running <<"\n\n";
+  cout << "#xspins = " << _xspins << "\n"
+    <<"#yspins = " << _yspins <<"\n"
+    <<"#J = " << _J <<"\n"
+    <<"#B = " << _B <<"\n"
+    <<"#beta = " << _beta <<"\n"
+    <<"#betaMax = " << betaMax <<"\n"
+    <<"#steps = " << steps <<"\n"
+    <<"#running = " << _running <<"\n\n";
 
   
   struct timeval start_time_init;
@@ -126,21 +209,21 @@ int main (int argc, char** argv)
   srand(start_time_init.tv_usec);
 
   //MetropolisStrategy* ms = new Metropolis2D(xspins,yspins, J, B);
-  MetropolisStrategy* ms = new MetropolisND(J, B, 2, xspins,yspins );
+  MetropolisStrategy* ms = new MetropolisND(_J, _B, 2, _xspins,_yspins );
 
   gettimeofday(&start_time_loop, NULL);
-  double M = 0; //isingLoop(ms, running, beta);
-  betaSlice(*ms, running, beta, 20*beta, 50);
+  double M = 0; //isingLoop(ms, _running, beta);
+  betaSlice(*ms, _running, _beta, betaMax, steps);
 
   gettimeofday(&comp_time, NULL);
   double time_init = (start_time_loop.tv_sec - start_time_init.tv_sec) + (start_time_loop.tv_usec - start_time_init.tv_usec) * 1e-6;
   double time_loop = (comp_time.tv_sec - start_time_loop.tv_sec) + (comp_time.tv_usec - start_time_loop.tv_usec) * 1e-6;
   
   
-  cout << "\nMagnetisierung M = " << M / xspins / yspins << "\n";
-  cout << "Berechnungszeit:\n  Init = " 
-	  << time_init << " sec\n  Loop = " 
-	  << time_loop << " sec\n  Ges  = "
+  //cout << "\n#Magnetisierung M = " << M / xspins / yspins << "\n";
+  cout << "#Berechnungszeit:\n#  Init = " 
+	  << time_init << " sec\n#  Loop = " 
+	  << time_loop << " sec\n#  Ges  = "
 	  << time_loop +  time_init << " sec\n";
 
 
