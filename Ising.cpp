@@ -21,6 +21,8 @@
 
 int _xspins,
     _yspins,
+    _zspins,
+    _dim, //Dimension
     _running;
 double _J,
        _B,
@@ -31,7 +33,6 @@ using namespace std;
 void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double betaMax, int steps)
 {
   const double betaStep = (betaMax - betaMin) / steps;
-  cout << betaStep << endl;
 
   //cout << "Threads max = " << omp_get_max_threads() << "\n";
   
@@ -88,6 +89,10 @@ void readConfig(int argc, char** argv, double& betaMax, int& steps)
     string variable = line.substr(0,eq);
     string wert = line.substr(eq+1);
 
+    if(strcmp(variable.c_str(),"dim") == 0)
+    {
+      _dim = atoi(wert.c_str());
+    }
     if(strcmp(variable.c_str(),"xspins") == 0)
     {
       _xspins = atoi(wert.c_str());
@@ -95,6 +100,10 @@ void readConfig(int argc, char** argv, double& betaMax, int& steps)
     else if(strcmp(variable.c_str(),"yspins") == 0)
     {
       _yspins = atoi(wert.c_str());
+    }
+    else if(strcmp(variable.c_str(),"zspins") == 0)
+    {
+      _zspins = atoi(wert.c_str());
     }
     else if(strcmp(variable.c_str(),"running") == 0)
     {
@@ -138,17 +147,19 @@ int main (int argc, char** argv)
   _beta = 1.23456e-3;
   _running = 1e3;
   _yspins = 1;
-  double betaMax = _beta * 20;
-  int steps = 50;
+  double betaMax = _beta;
+  int steps = 1;
   //parse command-line
   int j = 2;
   if (argc == 1 || strcmp(argv[1],"--help") == 0)
   {
     cout << "Parameter:\n"
-      << "1d <# Spins> <J> <B> <Temp [K]> [<# Durchläufe] \n"
-      << "2d <# Spins X> <# Spins Y> <J> <B> <Temp [K]>  [<# Durchläufe] \n\n"
+      << "1d <# Spins> <J> <B> <beta> [<# Durchläufe] \n"
+      << "2d <# Spins X> <# Spins Y> <J> <B> <beta>  [<# Durchläufe] \n"
+      << "3d <# Spins X> <# Spins Y> <# Spins Z> <J> <B> <beta> [<# Durchläufe] \n\n"
       << "./ising <config-Datei>\n"
       << "mit folgenden Variablen:\n"
+      << "dim=<int>\n"
       << "xspins=<int>\n"
       << "yspins=<int>\n"
       << "running=<int>\n"
@@ -166,33 +177,43 @@ int main (int argc, char** argv)
   {
     readConfig(argc, argv, betaMax, steps);
   }
-  else if (strcmp(argv[1], "1d") == 0)
+  else
   {
-    _xspins = atoi(argv[j++]);
+    if (strcmp(argv[1], "1d") == 0)
+    {
+      _dim = 1;
+      _xspins = atoi(argv[j++]);
+    }
+    else if (strcmp(argv[1], "2d") == 0)
+    {
+      _dim = 2;
+      _xspins = atoi(argv[j++]);
+      _yspins = atoi(argv[j++]);
+    }
+    else if (strcmp(argv[1], "3d") == 0)
+    {
+      _dim = 3;
+      _xspins = atoi(argv[j++]);
+      _yspins = atoi(argv[j++]);
+      _zspins = atoi(argv[j++]);
+    }
+    else
+    {
+      cout << "Falsche Parameter\n"
+        << argv[0] << argv[1] << argv[2];
+      return 1;
+    }
     _J = strtod(argv[j++], NULL);
     _B = strtod(argv[j++], NULL);
     _beta = strtod(argv[j++], NULL);
     if (argc == j + 1)
       _running = atoi( argv[j++]);
   }
-  else if (strcmp(argv[1], "2d") == 0)
-  {
-    _xspins = atoi(argv[j++]);
-    _yspins = atoi(argv[j++]);
-    _J = strtod(argv[j++], NULL);
-    _B = strtod(argv[j++], NULL);
-    _beta = 1.0/(kB * strtod(argv[j++], NULL));
-    if (argc == j + 1)
-      _running = atoi( argv[j++]);
-  }
-  else
-  {
-    cout << "Falsche Parameter\n"
-      << argv[0] << argv[1] << argv[2];
-    return 1;
-  }
-  cout << "#xspins = " << _xspins << "\n"
+
+  cout <<"#dim = " << _dim <<"\n"
+    << "#xspins = " << _xspins << "\n"
     <<"#yspins = " << _yspins <<"\n"
+    <<"#zspins = " << _yspins <<"\n"
     <<"#J = " << _J <<"\n"
     <<"#B = " << _B <<"\n"
     <<"#beta = " << _beta <<"\n"
@@ -209,7 +230,19 @@ int main (int argc, char** argv)
   srand(start_time_init.tv_usec);
 
   //MetropolisStrategy* ms = new Metropolis2D(xspins,yspins, J, B);
-  MetropolisStrategy* ms = new MetropolisND(_J, _B, 2, _xspins,_yspins );
+  MetropolisStrategy* ms;
+  if(_dim == 1)
+  {
+    ms = new MetropolisND(_J, _B, _dim, _xspins);
+  }
+  else if(_dim == 2)
+  {
+    ms = new MetropolisND(_J, _B, _dim, _xspins,_yspins );
+  }
+  else if(_dim == 3)
+  {
+    ms = new MetropolisND(_J, _B, _dim, _xspins,_yspins,_zspins );
+  }
 
   gettimeofday(&start_time_loop, NULL);
   double M = 0; //isingLoop(ms, _running, beta);

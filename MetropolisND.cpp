@@ -199,8 +199,7 @@ double MetropolisND::calculate_dE(int i) const
   double dJ = _j * dS_i * jn;
   double dB = _b * dS_i; 
 
-
-  return dJ - dB;
+  return -dJ - dB;
 }
 
 void MetropolisND::flipSpin(int i)
