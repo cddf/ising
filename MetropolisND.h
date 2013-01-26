@@ -47,6 +47,7 @@ class MetropolisND : public MetropolisStrategy
   void flipSpin(int i);
   void addProbability(int i);
   double measure() const;
+  void writeImageProbability(char* path);
 
   int spinNumber() const
   {

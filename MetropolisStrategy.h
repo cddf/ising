@@ -32,6 +32,11 @@ class MetropolisStrategy
   virtual int spinNumber() const = 0;
 
   /**
+   * Schreibt ein Bild mit den gemessenen Wahrscheinlichkeiten.
+   */
+  virtual void writeImageProbability(char* path) = 0;
+
+  /**
    * Setzt die Messung zurück und verteilt die Spins wieder zufaellig
    */
   virtual void reset() = 0;

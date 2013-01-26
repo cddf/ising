@@ -9,6 +9,8 @@
 #include <iostream>
 #include <stdarg.h>
 
+#include "WriteImage.h"
+
 using namespace std;
 
 MetropolisND::MetropolisND(double j, double b, int dim, ...)
@@ -227,10 +229,13 @@ double MetropolisND::measure() const
   for (int i = 0; i < _spinnumber; i++)
   {
     M += _Ws[i];
-	
-
   }
   return M;
+}
+
+void MetropolisND::writeImageProbability(char* path)
+{
+  writePgm(_size[0],_size[1],_Ws,path);
 }
 
 
