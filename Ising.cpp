@@ -76,7 +76,7 @@ void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double beta
       //cout << beta << " " << M / ms.spinNumber() << "\n";
 
       //s << "beta_" << i << ".pgm";
-      char* fuck = (char*) malloc(sizeof(*fuck) * 50);
+      char fuck[50];
       sprintf(fuck, "beta_%d.pgm", i);
       //char* cpp = "beta_";
       //strcat(cpp,fuck);
@@ -88,7 +88,7 @@ void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double beta
         cout << "dada: " << fuck << "\n";
         ms.writeImageProbability(fuck);
       }
-      free(fuck);
+      
 
     if(notmaster)
       delete &ms;
