@@ -15,7 +15,8 @@
 
 #include "IsingMetropolis.h"
 
-#define kB  1.3806488e-23
+//#define kB  1.3806488e-23
+#define kB  1.0
 
 #include "SpinArray.h"
 
@@ -32,24 +33,25 @@ using namespace std;
 
 void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double betaMax, int steps)
 {
-  const double betaStep = (betaMax - betaMin) / steps;
-
+  const double betaStep = (betaMax - betaMin) / ((steps <= 1 ? 2 : steps) - 1);
+  double M[steps];
+  double f[steps];
   //cout << "Threads max = " << omp_get_max_threads() << "\n";
   
-  cout << "#Beta Magnetisierung\n";
+  cout << "#T Magnetisierung FlipRate\n";
   
   if(steps < omp_get_max_threads())
     omp_set_num_threads(steps);
 
   //cout << "Threads max = " << omp_get_max_threads() << "\n";
   
-  MetropolisStrategy& ms = ms1;
+  
   #pragma omp parallel 
   {
-
+    MetropolisStrategy& ms = ms1;
     bool notmaster = true;
     
-    #pragma omp master
+    //#pragma omp master
     {
       //cout << "Threads num = " << omp_get_num_threads() << "\n";
   
@@ -64,13 +66,19 @@ void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double beta
       double beta = betaMin + betaStep * i;
       
       ms.reset();
-      double M = isingLoop(&ms, running, beta);
-
-      #pragma omp ordered 
-        cout << beta << " " << M / ms.spinNumber() << "\n";
+      //double f = 0;
+      //double M = 
+      M[i] = isingLoop(&ms, running, beta, &(f[i]));
 
     }
 
+    if(notmaster)
+      delete &ms;
+  }
+
+  for(int i=0; i <steps;i++)
+  {
+    cout << 1/(betaMin + betaStep * i) << " " << M[i] / ms1.spinNumber() << " " << f[i] << "\n";
   }
 }
 
@@ -85,6 +93,8 @@ void readConfig(int argc, char** argv, double& betaMax, int& steps)
   while (!f.eof())
   {
     getline(f, line);
+    if(strcmp(line.substr(0,1).c_str(), "#") == 0)
+      continue;
     unsigned eq = line.find("=");
     string variable = line.substr(0,eq);
     string wert = line.substr(eq+1);
@@ -228,7 +238,7 @@ int main (int argc, char** argv)
 
   gettimeofday(&start_time_init, NULL);
   srand(start_time_init.tv_usec);
-
+  
   //MetropolisStrategy* ms = new Metropolis2D(xspins,yspins, J, B);
   MetropolisStrategy* ms;
   if(_dim == 1)
@@ -258,7 +268,6 @@ int main (int argc, char** argv)
 	  << time_init << " sec\n#  Loop = " 
 	  << time_loop << " sec\n#  Ges  = "
 	  << time_loop +  time_init << " sec\n";
-
 
   delete ms;
   return 0;
