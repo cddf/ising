@@ -9,6 +9,8 @@
 #include <iostream>
 #include <stdarg.h>
 
+#include "WriteImage.h"
+
 using namespace std;
 
 MetropolisND::MetropolisND(double j, double b, int dim, ...)
@@ -167,10 +169,13 @@ double MetropolisND::calculate_dE(int i) const
   // dH = sum_j J_ij * (S'_i * S_j - S_i * S_j) - (S'_i - S_i) * B
   // dS_i = S'_i - S_i = +- 2
   // dH = sum_j J_ij * (dS_i * S_j) - (dS_i) * B
+  //
+  // => dE = J dS_i sum_j S_j + B dS_i
+  // dS_i = S_old - S_new
   int spin_old = _spins->GetSpin(i);
   int spin_new = -spin_old;
 
-  int dS_i = spin_new - spin_old;
+  int dS_i = spin_old - spin_new;
 
 
   int coord[_dim];
@@ -199,7 +204,7 @@ double MetropolisND::calculate_dE(int i) const
   double dJ = _j * dS_i * jn;
   double dB = _b * dS_i; 
 
-  return -dJ - dB;
+  return dJ + dB;
 }
 
 void MetropolisND::flipSpin(int i)
@@ -224,10 +229,13 @@ double MetropolisND::measure() const
   for (int i = 0; i < _spinnumber; i++)
   {
     M += _Ws[i];
-	
-
   }
   return M;
+}
+
+void MetropolisND::writeImageProbability(char* path)
+{
+  writePgm(_size[0],_size[1],_Ws,path);
 }
 
 

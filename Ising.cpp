@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <iostream>
+#include <sstream>
 #include <string.h>
 #include <sys/time.h>
 #include <omp.h>
@@ -66,20 +67,39 @@ void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double beta
       double beta = betaMin + betaStep * i;
       
       ms.reset();
-      //double f = 0;
+     //double f = 0;
       //double M = 
       M[i] = isingLoop(&ms, running, beta, &(f[i]));
 
-    }
+      
+      //#pragma omp ordered 
+      //cout << beta << " " << M / ms.spinNumber() << "\n";
+
+      //s << "beta_" << i << ".pgm";
+      char* fuck = (char*) malloc(sizeof(*fuck) * 50);
+      sprintf(fuck, "beta_%d.pgm", i);
+      //char* cpp = "beta_";
+      //strcat(cpp,fuck);
+      //strcat(cpp,".pgm");
+
+      //ms.writeImageProbability("/rd/fuck.pgm");
+      #pragma omp critical(printImage)
+      {
+        cout << "dada: " << fuck << "\n";
+        ms.writeImageProbability(fuck);
+      }
+      free(fuck);
 
     if(notmaster)
       delete &ms;
   }
 
+  }  
   for(int i=0; i <steps;i++)
   {
     cout << 1/(betaMin + betaStep * i) << " " << M[i] / ms1.spinNumber() << " " << f[i] << "\n";
   }
+  
 }
 
 /*
