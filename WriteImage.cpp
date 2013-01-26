@@ -6,8 +6,8 @@ using namespace std;
 
 void writePgm(int xsize, int ysize, double* data, char* path)
 {
-  double MaxValue = -1;
-  double MinValue = 1;
+  double MaxValue = 1;
+  double MinValue = -1;
 
   // find max and min
   /*
