@@ -6,10 +6,11 @@ using namespace std;
 
 void writePgm(int xsize, int ysize, double* data, char* path)
 {
-  double MaxValue = -9e99;
-  double MinValue = 9e99;
+  double MaxValue = -1;
+  double MinValue = 1;
 
   // find max and min
+  /*
   for(int i=0 ; i < xsize * ysize; i++ )
   {
     if( data[i] < MinValue )
@@ -21,6 +22,7 @@ void writePgm(int xsize, int ysize, double* data, char* path)
       MaxValue = data[i];
     }
   }
+  */
 
   int pixel[xsize*ysize];
   for(int i=0; i<xsize*ysize; i++)
@@ -31,7 +33,7 @@ void writePgm(int xsize, int ysize, double* data, char* path)
   ofstream out(path); 
   if(!out) 
   {
-    cout << "Cannot open file.\n"; 
+    cout << "#Cannot open file.\n"; 
   } 
   else
   {
@@ -48,7 +50,7 @@ void writePgm(int xsize, int ysize, double* data, char* path)
         out << endl;
       }
     }
-    cout << path << " written.\n";
+    cout << "#" << path << " written.\n";
     out.close(); 
   }
 

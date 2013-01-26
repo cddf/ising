@@ -78,14 +78,10 @@ void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double beta
       //s << "beta_" << i << ".pgm";
       char fuck[50];
       sprintf(fuck, "beta_%d.pgm", i);
-      //char* cpp = "beta_";
-      //strcat(cpp,fuck);
-      //strcat(cpp,".pgm");
 
-      //ms.writeImageProbability("/rd/fuck.pgm");
       #pragma omp critical(printImage)
       {
-        cout << "dada: " << fuck << "\n";
+        cout << "#data: " << fuck << "\n";
         ms.writeImageProbability(fuck);
       }
       
