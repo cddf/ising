@@ -2,6 +2,13 @@
 *.slo
 *.lo
 *.o
+*.d
+*.log
+*.aux
+*~
+*.toc
+*.backup
+*.out
 
 # Compiled Dynamic libraries
 *.so
