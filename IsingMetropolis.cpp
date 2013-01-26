@@ -11,8 +11,9 @@
 
 using namespace std;
 
+
 // ----------  template function --------
-double isingLoop(MetropolisStrategy* ms, int running, const double beta)
+double isingLoop(MetropolisStrategy* ms, int running, const double beta, double *flipRate)
 {
 
   //srand(1); // init seed, 1 for determinism             
@@ -21,6 +22,7 @@ double isingLoop(MetropolisStrategy* ms, int running, const double beta)
   int i = 0;
   bool random = true;
   double M;
+  int flips = 0;
   //omp_set_num_threads(0);
 
   //#pragma omp parallel for
@@ -48,6 +50,7 @@ double isingLoop(MetropolisStrategy* ms, int running, const double beta)
     {
       // accept
       ms->flipSpin(i);
+      flips++;
     }
     else
     {
@@ -68,6 +71,8 @@ double isingLoop(MetropolisStrategy* ms, int running, const double beta)
 
   }
   M = ms->measure();
+  //double 
+  *flipRate = flips / ((double) running);
   return M;
 }
 

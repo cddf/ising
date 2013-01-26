@@ -6,6 +6,7 @@
 #include "MetropolisStrategy.h"
 #include "SpinArray.h"
 
+
 class MetropolisND : public MetropolisStrategy
 {
   private:
@@ -35,9 +36,9 @@ class MetropolisND : public MetropolisStrategy
   ~MetropolisND()
   {
    	delete _spins;
-	delete [] _size;
-	delete [] _Ws;
-	delete [] _NWs;
+	  delete [] _size;
+	  delete [] _Ws;
+	  delete [] _NWs;
   }
   
   void reset();

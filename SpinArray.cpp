@@ -3,7 +3,8 @@
 
 SpinArray::SpinArray(int length)
 {
-	_length = length / (sizeof(char) * 8);
+	_length = 1 + ((length - 1) / (sizeof(char) * 8));
+  
 	_array = new char[_length];
 }
 
