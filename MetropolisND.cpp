@@ -239,8 +239,13 @@ void MetropolisND::writeImageProbability(char* path)
 }
 
 
-
-
-
-
-
+void MetropolisND::writeImageSpins(char* path)
+{
+  double* spins;
+  spins = new double[_spinnumber];
+  for(int i=0; i<_spinnumber;i++)
+  {
+    spins[i] = _spins->GetSpin(i);
+  }
+  writePgm(_size[0],_size[1],spins,path);
+}

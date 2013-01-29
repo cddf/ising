@@ -85,6 +85,14 @@ void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double beta
         ms.writeImageProbability(fuck);
       }
       
+      char datei[50];
+      sprintf(datei, "spins_%d.pgm", i);
+
+      #pragma omp critical(printImage)
+      {
+        cout << "#data: " << datei << "\n";
+        ms.writeImageSpins(datei);
+      }
 
     if(notmaster)
       delete &ms;

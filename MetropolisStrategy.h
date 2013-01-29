@@ -37,6 +37,11 @@ class MetropolisStrategy
   virtual void writeImageProbability(char* path) = 0;
 
   /**
+   * Schreibt ein Bild mit aktuellen Spins.
+   */
+  virtual void writeImageSpins(char* path) = 0;
+
+  /**
    * Setzt die Messung zurück und verteilt die Spins wieder zufaellig
    */
   virtual void reset() = 0;
