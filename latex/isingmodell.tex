@@ -1,5 +1,10 @@
 \section{Das Ising-Modell}
-\begin{align*}
-  s_i^z &= \pm 1\\
-  \hat{\mathcal H} &= -\frac 12\sum _{ij} J_{ij} s_i^z s_j^z - H_z \sum_{i=1}^N s_i^z
-\end{align*}
+Das Ising-Modell ist eine Vereinfachung des Heisenberg-Modells. Die Spins werden nicht als Vektor behandelt, sondern auf $s_i^z = \pm 1$ reduziert.
+\begin{equation}
+  \hat{\mathcal H} = -\frac 12\sum _{ij} J_{ij} s_i^z s_j^z - B_z \sum_{i=1}^N s_i^z
+\end{equation}
+%TODO schöne Einleitung
+Deshalb ist das Ising-Modell vor allem dann eine gute Näherung des Heisenberg-Modells, wenn sich durch Anisotropien eine vorgezogene Richtung ergibt, oder wenn sich die Spins an einem Isotropen äußeren Magnetfeld ausrichten.
+Um das Modell weiter zu vereinfachen, wird in der Regel für $J_{ij}$ eine nächste-Nachbar-Wechselwirkung angenommen. $J$ ist konstant für das gesamte System und es wird nur die Wechselwirkung mit den direkten Nachbarn berechnet.
+
+Mit dem Modell kann der Phasenübergang eines Ferromagneten in zwei und mehr Dimensionen beschrieben werden.

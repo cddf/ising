@@ -9,6 +9,9 @@
 *.toc
 *.backup
 *.out
+*.pgm
+*.bbl
+*.blg
 
 # Compiled Dynamic libraries
 *.so
