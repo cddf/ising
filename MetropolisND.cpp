@@ -241,11 +241,27 @@ void MetropolisND::writeImageProbability(char* path)
 
 void MetropolisND::writeImageSpins(char* path)
 {
+  int coord[_dim < 2 ? 2 : _dim];
+  for(int i = 0; i < _dim;i++)
+    coord[i] = 0;
+  
+  int xdim = _size[0];
+  int ydim = _dim >= 2 ? _size[1] : 1;
+
   double* spins;
-  spins = new double[_spinnumber];
-  for(int i=0; i<_spinnumber;i++)
+  spins = new double[xdim * ydim];
+
+  for(int i=0; i< xdim;i++)
   {
-    spins[i] = _spins->GetSpin(i);
+    coord[0] = i;
+    for(int j=0; j< ydim;j++)
+    {
+      coord[1] = j;
+      int index = getLin(coord);
+      spins[i * ydim + j] = _spins->GetSpin(index);
+    }
   }
-  writePgm(_size[0],_size[1],spins,path);
+  
+  writePgm(xdim,ydim,spins,path);
+  delete[] spins;
 }
