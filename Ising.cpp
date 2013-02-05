@@ -32,7 +32,7 @@ double _J,
 
 using namespace std;
 
-void betaSlice(MetropolisStrategy& ms1, int running, double betaMin, double betaMax, int steps)
+void betaSweep(MetropolisStrategy& ms1, int running, double betaMin, double betaMax, int steps)
 {
   const double betaStep = (betaMax - betaMin) / ((steps <= 1 ? 2 : steps) - 1);
   double M[steps];
@@ -280,7 +280,7 @@ int main (int argc, char** argv)
 
   gettimeofday(&start_time_loop, NULL);
   double M = 0; //isingLoop(ms, _running, beta);
-  betaSlice(*ms, _running, _beta, betaMax, steps);
+  betaSweep(*ms, _running, _beta, betaMax, steps);
 
   gettimeofday(&comp_time, NULL);
   double time_init = (start_time_loop.tv_sec - start_time_init.tv_sec) + (start_time_loop.tv_usec - start_time_init.tv_usec) * 1e-6;
