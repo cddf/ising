@@ -156,17 +156,17 @@ void betaSweep(MetropolisStrategy& ms1, int running, double betaMin, double beta
 
       //#pragma omp critical(printImage)
       {
-        //cout << "#data: " << fuck << "\n";
-        //ms.writeImageProbability(fuck);
+        cout << "#data: " << fuck << "\n";
+        ms.writeImageProbability(fuck);
       }
       
-      //char datei[50];
-      //sprintf(datei, "spins_%d.pgm", i);
+      char datei[50];
+      sprintf(datei, "spins_%d.pgm", i);
 
       //#pragma omp critical(printImage)
       {
-        //cout << "#data: " << datei << "\n";
-        //ms.writeImageSpins(datei);
+        cout << "#data: " << datei << "\n";
+        ms.writeImageSpins(datei);
       }
 
     }
