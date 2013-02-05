@@ -32,6 +32,81 @@ double _J,
 
 using namespace std;
 
+
+void B_FielSweep(MetropolisStrategy& ms, int running, double beta, double bMin, double bMax, int steps)
+{
+  // 0 ----> Bmax ----> Bmin ----> Bmax
+  //    s/5       s*2/5      s*2/5
+  // s = steps
+  int s1 = steps / 5 + steps % 5;
+  int s2 = 2 * (steps / 5) ;
+  int s3 = 2 * (steps / 5) ;
+  
+  int o_max = s1; //steps / 5 + steps % 5;
+  int max_min = o_max + s2; //3 * (steps / 5) + steps % 5;
+  int min_max = max_min + s3; // steps;
+  
+  double B[steps + 1];
+  double M[steps + 1];
+  double f[steps + 1];
+  
+
+  for(int i= 0; i <= steps; i++)
+  {
+    double b = 0.0;
+    if(i < o_max)
+    {
+      // 0 <= b < bmax
+      b = bMax * (((double) i) / ((double) s1));
+    }
+    else if(i < max_min)
+    {
+      // bmin < b <= bmax
+      b = bMax +  (bMin - bMax) * (((double) (i - o_max)) / ((double) s2));
+    }
+    else if(i < min_max)
+    {
+      // bmin <= b <= bmax
+      b = bMin +  (bMax - bMin) * (((double) (i - max_min)) / ((double) s3));
+    }
+    
+    ms.resetMeasure();
+    ms.setBField(b);
+    
+    B[i] = b;
+    M[i] = isingLoop(&ms, running, beta, &(f[i]));
+
+    
+    //#pragma omp ordered 
+    //cout << b << " " << M / ms.spinNumber() << "\n";
+
+    //s << "beta_" << i << ".pgm";
+    char fuck[50];
+    sprintf(fuck, "beta_%d.pgm", i);
+
+    //#pragma omp critical(printImage)
+    {
+      //cout << "#data: " << fuck << "\n";
+      //ms.writeImageProbability(fuck);
+    }
+    
+    //char datei[50];
+    //sprintf(datei, "spins_%d.pgm", i);
+
+    //#pragma omp critical(printImage)
+    {
+      //cout << "#data: " << datei << "\n";
+      //ms.writeImageSpins(datei);
+    }
+
+  }
+  
+  for(int i=0; i < steps + 1;i++)
+  {
+    cout << B[i] << " " << M[i] / ms.spinNumber() << " " << f[i] << "\n";
+  }
+}
+
 void betaSweep(MetropolisStrategy& ms1, int running, double betaMin, double betaMax, int steps)
 {
   const double betaStep = (betaMax - betaMin) / ((steps <= 1 ? 2 : steps) - 1);
@@ -61,7 +136,7 @@ void betaSweep(MetropolisStrategy& ms1, int running, double betaMin, double beta
     if(notmaster)
       ms = ms1.clone();
     
-    #pragma omp for schedule(static) ordered
+    #pragma omp for schedule(static)
     for(int i= 0; i < steps; i++)
     {
       double beta = betaMin + betaStep * i;
@@ -79,24 +154,24 @@ void betaSweep(MetropolisStrategy& ms1, int running, double betaMin, double beta
       char fuck[50];
       sprintf(fuck, "beta_%d.pgm", i);
 
-      #pragma omp critical(printImage)
+      //#pragma omp critical(printImage)
       {
-        cout << "#data: " << fuck << "\n";
-        ms.writeImageProbability(fuck);
+        //cout << "#data: " << fuck << "\n";
+        //ms.writeImageProbability(fuck);
       }
       
-      char datei[50];
-      sprintf(datei, "spins_%d.pgm", i);
+      //char datei[50];
+      //sprintf(datei, "spins_%d.pgm", i);
 
-      #pragma omp critical(printImage)
+      //#pragma omp critical(printImage)
       {
-        cout << "#data: " << datei << "\n";
-        ms.writeImageSpins(datei);
+        //cout << "#data: " << datei << "\n";
+        //ms.writeImageSpins(datei);
       }
 
+    }
     if(notmaster)
       delete &ms;
-  }
 
   }  
   for(int i=0; i <steps;i++)
@@ -280,7 +355,9 @@ int main (int argc, char** argv)
 
   gettimeofday(&start_time_loop, NULL);
   double M = 0; //isingLoop(ms, _running, beta);
-  betaSweep(*ms, _running, _beta, betaMax, steps);
+  //betaSweep(*ms, _running, _beta, betaMax, steps);
+
+  B_FielSweep(*ms, _running, _beta, - _B, _B, steps);
 
   gettimeofday(&comp_time, NULL);
   double time_init = (start_time_loop.tv_sec - start_time_init.tv_sec) + (start_time_loop.tv_usec - start_time_init.tv_usec) * 1e-6;

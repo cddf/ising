@@ -56,7 +56,11 @@ class MetropolisND : public MetropolisStrategy
   {
 	  return _spinnumber;
   }
-
+  
+  void setBField(double newB)
+  {
+    _b = newB;
+  }
   
 };
 

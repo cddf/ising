@@ -14,7 +14,7 @@ class MetropolisStrategy
   /**
    * Berechnet die Differenz in der Magnetisierung zwischen aktuellem und geflippten state
    */     
-  virtual double calculate_dM(int i) const = 0;
+  //virtual double calculate_dM(int i) const = 0;
 
   /**
    * Flips the Spin i
@@ -54,6 +54,11 @@ class MetropolisStrategy
    * Setzt die Messung zurück, aber nicht die Spins
    */
   virtual void resetMeasure() = 0;
+
+  /**
+   * Setzt das B-Feld neu. 
+   */
+  virtual void setBField(double newB) = 0;
 
   /**
    * Kopiert alle Einstellungen und gibt eine neue Strategie zurueck
