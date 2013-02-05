@@ -42,6 +42,7 @@ class MetropolisND : public MetropolisStrategy
   }
   
   void reset();
+  void resetMeasure();
   MetropolisStrategy& clone() const;
 
   double calculate_dE(int i) const;

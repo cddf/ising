@@ -137,6 +137,16 @@ void MetropolisND::reset()
 	}
 }
 
+void MetropolisND::resetMeasure()
+{
+   // do random initialization with +1 or -1
+	for(int i = 0; i < _spinnumber; i++)
+	{
+	  _Ws[i] = 0;
+	  _NWs[i] = 0;
+	}
+}
+
 void MetropolisND::getCoord(int i, int coord[]) const
 {
   //int* result = new int[_dim];
