@@ -24,10 +24,11 @@
 
 %
 \usepackage{graphicx} %%Zum Laden von Grafiken
-%\usepackage{subfig} %%Teilabbildungen in einer Abbildung
+\usepackage{subfig} %%Teilabbildungen in einer Abbildung
 %\usepackage{tikz} %%Vektorgrafiken aus LaTeX heraus erstellen
 
-
+\relpenalty=9999	%verhindert Trennung von $...$
+\binoppenalty=9999
 
 
 %% Bibliographiestil %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -76,6 +77,6 @@
 \include{montecarlo}
 \include{implementierung}
 
-\bibliography{literatur}
-\bibliographystyle{alpha}
+%\bibliography{literatur}
+%\bibliographystyle{alpha}
 \end{document}
