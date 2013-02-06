@@ -65,6 +65,8 @@ class MetropolisStrategy
    * Dabei sind alle Messwert 0 und die Spinverteilung ist zufaellig
    */
   virtual MetropolisStrategy& clone() const = 0;
+
+  virtual ~MetropolisStrategy() {}
 }; 
 
 
