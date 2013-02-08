@@ -1,4 +1,5 @@
 \section{Die Monte-Carlo-Methode}
+\label{sec:MonteCarloMethode}
 Die Monte-Carlo-Methode ermöglicht das Simulieren von Systemen, die auf Wahrscheinlichkeiten beruhen.
 Mit ihrer Hilfe ist es nicht nötig, komplexe stochastische Formeln zu entwickeln, sondern es reicht ein Zufallszahlengenerator aus.
 Durch sehr häufige Wiederholung der Messung lassen sich gute statistische Näherungen simulieren.
@@ -12,26 +13,26 @@ Die Vereinigung von Monte-Carlo mit dem Ising-Modell funktioniert nach folgendem
 
  \item Berechne die Energiedifferenz
 		\begin{equation}
-		  \Delta E = E(-S_i) - E(S_i)
+		  \Delta E = E(-S_i) - E(S_i) \label{eq:EnergieDiff}
 		\end{equation}
 		Wenn $\Delta E$ negativ ist, wird der Spinflip akzeptiert.
 		Ansonsten wird die Entscheidung Metropolis überlassen.\\
 		\textbf{Metropolis:} Wähle eine Zufallszahl $r$ zwischen $0$ und $1$.
 		Wenn
 		\begin{equation}
-		  r<e^{-\beta \Delta E}
+		  r<e^{-\beta \Delta E} \label{eq:FlipChance}
 		\end{equation}
 		wird der Flip akzeptiert. $\beta=\frac{1}{k_B T}$ also der Kehrwert der Temperatur $T$, da bei uns die Boltzmann-Konstante $k_B$ gleich eins ist.
 
  \item Speichere die neue Wahrscheinlichkeit der Spinausrichtung
 		\begin{equation}
-		  \langle S_i \rangle_{\text{neu}} = \frac{\langle S_i \rangle \cdot N_i + S_i}{N_i + 1},
+		  \langle S_i \rangle_{\text{neu}} = \frac{\langle S_i \rangle \cdot N_i + S_i}{N_i + 1},  \label{eq:RekursiverMittelwert}
 		\end{equation}
 		wobei $N_i$ die Anzahl der bisherigen Messungen des Spins $S_i$ ist.
 
  \item Die Magnetisierung $M$ ist die Summe der Erwartungswerte der einzelnen Spins $S_i$, normalisiert mit der Anzahl der Spins $N$:
 		\begin{equation}
-		  M = \frac 1N \sum_i \langle S_i \rangle
+		  M = \frac 1N \sum_i \langle S_i \rangle \label{eq:MagErwartungswert}
 		\end{equation}
 \end{enumerate}
 Die Punkte eins bis drei werden immer wiederholt und zum Schluss die Magnetisierung gemessen.

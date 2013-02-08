@@ -153,7 +153,7 @@ void MetropolisND::getCoord(int i, int coord[]) const
   for(int j = 0; j < _dim; j++)
   {
     coord[j] = i % _size[j];
-	i /= _size[j];
+	  i /= _size[j];
   }
 
   //return result;
@@ -166,7 +166,7 @@ int MetropolisND::getLin(const int coord[]) const
   for(int j = 0; j < _dim; j++)
   {
     i += coord[j] * size;
-	size *= _size[j];
+	  size *= _size[j];
   }
   return i;
 }
