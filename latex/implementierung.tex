@@ -27,7 +27,7 @@ Weil das Strategie-Pattern verwendet wird, definiert \textit{IsingMetropolis.cpp
 
 
 \subsection{Die Metropolis-Strategie}
-Die Schnittstelle der Strategie ist in  \textit{MetropolisStrategy.h} beschrieben. Für den Metropolis-Algorithmus wichtigen Funktionen sind:
+Die Schnittstelle der Strategie ist in  \textit{MetropolisStrategy.h} beschrieben. Für den Metropolis-Algorithmus wichtige Funktionen sind:
 \begin{list}{}{}
 \item  \textit{spinNumber()} zur Bestimmung der Spinanzahl (Maximum für Zufallsspin)
 \item  \textit{calculate\_dE(int i)} Bestimmt die Energiedifferenz, wenn Spin \textit{i} flippte
@@ -43,7 +43,7 @@ Die restlichen Methoden dienen zur Simulationssteuerung (\textit{reset()} ,
 Wir verwenden nur eine Strategie, da sie die anderen darstellen kann und andere (noch) nicht implementiert sind: \textit{MetropolisND}. Es ist aber denkbar, dass z.B. eine Strategie mit Störstellen, eine anderer Gitteraufteilung (z.B. eine hexagonale Struktur) oder nicht nur nächste-Nachbarn-Näherung hinzugefügt werden.
 
 \paragraph{MetropolisND}
-Sowohl der Zugriff von außen (um die Schnittstelle allgemein zu halten) als auch die Speicherung der Spins (siehe Abschnitt \ref{sec:SpinArray}) erfolgt in linearer Weise. Da aber die nächste-Nachbar-Wechselwirkung in alle Dimensionen verläuft, ist eine Transformation des linearen Index' in eine ND-Koordinate notwendig. Zur Transformation wird einen Abwandlung des ''Turning-Weels''-Algorithmus' (wird verwendet um ein Kartesisches Produkt zu bilden, unser Algorithmus nummeriert quasi diese Elemente) verwendet. Der Index berechnet sich durch
+Sowohl der Zugriff von außen (um die Schnittstelle allgemein zu halten) als auch die Speicherung der Spins (siehe Abschnitt \ref{sec:SpinArray}) erfolgt in linearer Weise. Da aber die nächste-Nachbar-Wechselwirkung in alle Dimensionen verläuft, ist eine Transformation des linearen Index' in eine ND-Koordinate notwendig. Zur Transformation wird eine Abwandlung des ''Turning-Weels''-Algorithmus' (wird verwendet um ein Kartesisches Produkt zu bilden, unser Algorithmus nummeriert quasi diese Elemente) verwendet. Der Index berechnet sich durch
 \begin{equation}
 i = \sum_{j=1}^D{ c(j)  \prod_{d=1}^{j-1} { s(d) }}
 \end{equation}

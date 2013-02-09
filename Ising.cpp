@@ -29,6 +29,7 @@ int _xspins,
 double _J,
        _B,
        _beta;
+bool _bsweep;
 
 using namespace std;
 
@@ -50,6 +51,7 @@ void B_FielSweep(MetropolisStrategy& ms, int running, double beta, double bMin, 
   double M[steps + 1];
   double f[steps + 1];
   
+  cout << "#B Magnetisierung FlipRate\n";
 
   for(int i= 0; i <= steps; i++)
   {
@@ -81,22 +83,22 @@ void B_FielSweep(MetropolisStrategy& ms, int running, double beta, double bMin, 
     //cout << b << " " << M / ms.spinNumber() << "\n";
 
     //s << "beta_" << i << ".pgm";
-    char fuck[50];
-    sprintf(fuck, "beta_%d.pgm", i);
+    char datei[50];
+    sprintf(datei, "b_%d.pgm", i);
 
-    //#pragma omp critical(printImage)
-    {
-      //cout << "#data: " << fuck << "\n";
-      //ms.writeImageProbability(fuck);
-    }
-    
-    //char datei[50];
-    //sprintf(datei, "spins_%d.pgm", i);
-
-    //#pragma omp critical(printImage)
+    #pragma omp critical(printImage)
     {
       //cout << "#data: " << datei << "\n";
-      //ms.writeImageSpins(datei);
+      ms.writeImageProbability(datei);
+    }
+    
+    char datei2[50];
+    sprintf(datei2, "spins_%d.pgm", i);
+
+    #pragma omp critical(printImage)
+    {
+     // cout << "#data: " << datei << "\n";
+      ms.writeImageSpins(datei2);
     }
 
   }
@@ -109,12 +111,12 @@ void B_FielSweep(MetropolisStrategy& ms, int running, double beta, double bMin, 
 
 void betaSweep(MetropolisStrategy& ms1, int running, double betaMin, double betaMax, int steps)
 {
-  const double betaStep = (betaMax - betaMin) / ((steps <= 1 ? 2 : steps) - 1);
+  const double betaStep = 1.0 * (betaMax - betaMin) / (1.0*(steps <= 1 ? 2 : steps) - 1.0);
   double M[steps];
   double f[steps];
   //cout << "Threads max = " << omp_get_max_threads() << "\n";
   
-  cout << "#T Magnetisierung FlipRate\n";
+  cout << "#beta Magnetisierung FlipRate\n";
   
   if(steps < omp_get_max_threads())
     omp_set_num_threads(steps);
@@ -135,7 +137,6 @@ void betaSweep(MetropolisStrategy& ms1, int running, double betaMin, double beta
     }
     if(notmaster)
       ms = ms1.clone();
-    
     #pragma omp for schedule(static)
     for(int i= 0; i < steps; i++)
     {
@@ -151,22 +152,22 @@ void betaSweep(MetropolisStrategy& ms1, int running, double betaMin, double beta
       //cout << beta << " " << M / ms.spinNumber() << "\n";
 
       //s << "beta_" << i << ".pgm";
-      char fuck[50];
-      sprintf(fuck, "beta_%d.pgm", i);
+      char datei[50];
+      sprintf(datei, "beta_%d.pgm", i);
 
       //#pragma omp critical(printImage)
       {
-        cout << "#data: " << fuck << "\n";
-        ms.writeImageProbability(fuck);
+      //  cout << "#data: " << datei << "\n";
+        ms.writeImageProbability(datei);
       }
       
-      char datei[50];
-      sprintf(datei, "spins_%d.pgm", i);
+      char datei2[50];
+      sprintf(datei2, "spins_%d.pgm", i);
 
       //#pragma omp critical(printImage)
       {
-        cout << "#data: " << datei << "\n";
-        ms.writeImageSpins(datei);
+      //  cout << "#data: " << datei << "\n";
+        ms.writeImageSpins(datei2);
       }
 
     }
@@ -176,7 +177,7 @@ void betaSweep(MetropolisStrategy& ms1, int running, double betaMin, double beta
   }  
   for(int i=0; i <steps;i++)
   {
-    cout << 1/(betaMin + betaStep * i) << " " << M[i] / ms1.spinNumber() << " " << f[i] << "\n";
+    cout << (betaMin + betaStep * i) << " " << M[i] / ms1.spinNumber() << " " << f[i] << "\n";
   }
   
 }
@@ -246,6 +247,13 @@ void readConfig(int argc, char** argv, double& betaMax, int& steps)
     {
       steps = atoi(wert.c_str());
     }
+    else if(strcmp(variable.c_str(),"method") == 0)
+    {
+      if (strcmp(wert.c_str(),"bsweep") == 0)
+      {
+        _bsweep = true;
+      }
+    }
   }
   f.close();
 }
@@ -253,6 +261,7 @@ void readConfig(int argc, char** argv, double& betaMax, int& steps)
 
 int main (int argc, char** argv)
 {
+  _bsweep = false;
   _beta = 1.23456e-3;
   _running = 1e3;
   _yspins = 1;
@@ -268,6 +277,7 @@ int main (int argc, char** argv)
       << "3d <# Spins X> <# Spins Y> <# Spins Z> <J> <B> <beta> [<# Durchläufe] \n\n"
       << "./ising <config-Datei>\n"
       << "mit folgenden Variablen:\n"
+      << "method=bsweep|betasweep\n"
       << "dim=<int>\n"
       << "xspins=<int>\n"
       << "yspins=<int>\n"
@@ -319,6 +329,11 @@ int main (int argc, char** argv)
       _running = atoi( argv[j++]);
   }
 
+  if (_bsweep)
+    cout << "#method = bsweep\n";
+  else
+    cout << "#method = betasweep\n";
+
   cout <<"#dim = " << _dim <<"\n"
     << "#xspins = " << _xspins << "\n"
     <<"#yspins = " << _yspins <<"\n"
@@ -355,9 +370,11 @@ int main (int argc, char** argv)
 
   gettimeofday(&start_time_loop, NULL);
   double M = 0; //isingLoop(ms, _running, beta);
-  //betaSweep(*ms, _running, _beta, betaMax, steps);
+  if (_bsweep)
+    B_FielSweep(*ms, _running, _beta, - _B, _B, steps);
+  else
+    betaSweep(*ms, _running, _beta, betaMax, steps);
 
-  B_FielSweep(*ms, _running, _beta, - _B, _B, steps);
 
   gettimeofday(&comp_time, NULL);
   double time_init = (start_time_loop.tv_sec - start_time_init.tv_sec) + (start_time_loop.tv_usec - start_time_init.tv_usec) * 1e-6;

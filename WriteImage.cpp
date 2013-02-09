@@ -50,7 +50,7 @@ void writePgm(int xsize, int ysize, double* data, char* path)
         out << endl;
       }
     }
-    cout << "#" << path << " written.\n";
+//    cout << "#" << path << " written.\n";
     out.close(); 
   }
 
